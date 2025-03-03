@@ -1,0 +1,81 @@
+
+
+import {BrowserRouter,Routes,Route} from "react-router-dom";
+import {lazy, Suspense} from "react"
+import ProtectedRoute from "./components/Styles/auth/ProtectedRoute";
+import LayoutLoader from "./components/loaders/LayoutLoader.jsx";
+import Chats from "./pages/Chats.jsx";
+import NewGroupMenu from "./components/specific/NewGroupMenu.jsx";
+import Groups from "./pages/Groups.jsx";
+
+
+
+
+
+const Home=lazy(()=>import("./pages/Home.jsx"));
+const Login=lazy(()=>import("./pages/Login.jsx"));
+
+const AdminLogin=lazy(()=>import("./pages/Admin/AdminLogin.jsx"));
+
+const AdminDashboard=lazy(()=>import("./pages/Admin/AdminDashboard.jsx"))
+
+
+const AdminUsersMangement=lazy(()=>import("./pages/Admin/UsersManagement.jsx"))
+
+const AdminChatsMangement=lazy(()=>import("./pages/Admin/ChatsManagement.jsx"))
+
+const AdminMessages=lazy(()=>import("./pages/Admin/Messages.jsx"))
+
+
+
+
+let user=false;
+
+function App() {
+
+  return (
+    <>
+    
+
+
+      <BrowserRouter>
+
+      <Suspense fallback={<LayoutLoader/>}>
+      <Routes>
+
+        <Route element={<ProtectedRoute user={user}/>}>
+        
+        <Route path="/" element={<Home/>} />
+
+        <Route path="/groups" element={<Groups/>}/>
+
+        <Route path="/chat/:id" element={<Chats/>}/>
+
+
+        </Route>
+
+        <Route path="/login" element={<ProtectedRoute user={!user} redirectPath="/"> <Login/> </ProtectedRoute>} />
+
+        <Route path="/admin" element={<AdminLogin/>}/>
+
+        <Route path="/admin/dashboard" element={<AdminDashboard/>}/>
+
+        <Route path="/admin/users-management" element={<AdminUsersMangement/>}/>
+
+        <Route path="/admin/chats-management" element={<AdminChatsMangement/>}/>
+        <Route path="/admin/messages" element={<AdminMessages/>}/>
+         
+        </Routes>
+
+      </Suspense>
+        
+
+      </BrowserRouter>
+    </>
+  )
+
+}
+  
+  
+
+export default App
