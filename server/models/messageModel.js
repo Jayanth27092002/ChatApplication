@@ -22,7 +22,7 @@ const schema=new Schema({
         default:"",
     },
 
-    attachements:[{
+    attachments:[{
         public_id:{
             type:String,
             required:true

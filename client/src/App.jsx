@@ -1,12 +1,15 @@
 
 
 import {BrowserRouter,Routes,Route} from "react-router-dom";
-import {lazy, Suspense} from "react"
+import {lazy, Suspense, useEffect} from "react"
 import ProtectedRoute from "./components/Styles/auth/ProtectedRoute";
 import LayoutLoader from "./components/loaders/LayoutLoader.jsx";
 import Chats from "./pages/Chats.jsx";
 import NewGroupMenu from "./components/specific/NewGroupMenu.jsx";
 import Groups from "./pages/Groups.jsx";
+
+import axios from "axios";
+import { server } from "./constants/config.js";
 
 
 
@@ -29,9 +32,17 @@ const AdminMessages=lazy(()=>import("./pages/Admin/Messages.jsx"))
 
 
 
-let user=false;
+let user=true;
 
 function App() {
+
+  useEffect(()=>{
+
+    console.log(server);
+
+    axios.get(`${server}/api/v1/users/me`).then((res)=>console.log(res)).catch((error)=>console.log(error));
+
+  },[])
 
   return (
     <>

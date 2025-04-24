@@ -1,3 +1,4 @@
+import { userSocketIds } from "../app.js";
 
 
 const otherMember=(members,_id)=>{
@@ -6,4 +7,11 @@ const otherMember=(members,_id)=>{
 }
 
 
-export {otherMember}
+
+const getSockets=(users=[])=>{
+    const sockets=users.map((user)=>userSocketIds.get(user._id.toString()));
+
+    return sockets;
+}
+
+export {otherMember,getSockets}

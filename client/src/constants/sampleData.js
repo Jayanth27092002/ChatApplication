@@ -12,7 +12,7 @@ export const sampleChats = [
     avatar: [
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTNSi5ENEozlbErKXwWXnvR5CRYTCIhUv1XA&s",
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0pKfw1TfBf0geHsmLVMPzf5uc4XyNMOtiMg&s",
-      "https://images.javatpoint.com/top10-technologies/images/top-10-hollywood-actress3-2.png",
+      "https://digitalcrime.news/wp-content/uploads/2022/08/main-qimg-271d70a01d99e5f5c5e2fda89d9e9711-lq.jpg",
     ],
     name: "Jayanth",
     _id: "5",
@@ -24,7 +24,7 @@ export const sampleChats = [
     avatar: [
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTNSi5ENEozlbErKXwWXnvR5CRYTCIhUv1XA&s",
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0pKfw1TfBf0geHsmLVMPzf5uc4XyNMOtiMg&s",
-      "https://images.javatpoint.com/top10-technologies/images/top-10-hollywood-actress3-2.png",
+      "https://digitalcrime.news/wp-content/uploads/2022/08/main-qimg-271d70a01d99e5f5c5e2fda89d9e9711-lq.jpg",
     ],
     name: "Jayanth",
     _id: "6",
@@ -45,7 +45,7 @@ export const Sample_users = [
     avatar: [
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTNSi5ENEozlbErKXwWXnvR5CRYTCIhUv1XA&s",
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0pKfw1TfBf0geHsmLVMPzf5uc4XyNMOtiMg&s",
-      "https://images.javatpoint.com/top10-technologies/images/top-10-hollywood-actress3-2.png",
+      "https://digitalcrime.news/wp-content/uploads/2022/08/main-qimg-271d70a01d99e5f5c5e2fda89d9e9711-lq.jpg",
     ],
     name: "Jayanth",
     _id: "5",
@@ -77,10 +77,10 @@ export const sample_Chat = [
     attachments: [
       {
         public_id: "asdsad",
-        url: "https://static.toiimg.com/photo/55895697/Sexiest-Hollywood-Actresses-in-2016.jpg",
+        url: "https://e0.pxfuel.com/wallpapers/146/43/desktop-wallpaper-history-of-the-batmobile-hollywood-s-hero-car-batman-tumbler.jpg",
       },
     ],
-    content: "Luda ka Message hai",
+    content: "Hi bro",
     _id: "sfnsdjkfsdnfkjsbnd",
     sender: {
       _id: "user_id",
@@ -94,7 +94,7 @@ export const sample_Chat = [
     attachments: [
       {
         public_id: "asdsadd",
-        url: "https://digitalcrime.news/wp-content/uploads/2022/08/main-qimg-271d70a01d99e5f5c5e2fda89d9e9711-lq.jpg",
+        url: "https://e0.pxfuel.com/wallpapers/607/762/desktop-wallpaper-peaky-blinder-thomas-hollywood-hero.jpg",
       },
     ],
 
@@ -159,7 +159,7 @@ export const DashboardData = {
       attachments: [
         {
           public_id: "sdfdsfdsf",
-          url: "https://images.javatpoint.com/top10-technologies/images/top-10-hollywood-actress3-2.png",
+          url: "https://digitalcrime.news/wp-content/uploads/2022/08/main-qimg-271d70a01d99e5f5c5e2fda89d9e9711-lq.jpg",
         },
       ],
       content: "KYa kar raha bhosdike",
@@ -192,12 +192,12 @@ export const DashboardData = {
         {
           _id: "3",
           avatar:
-            "https://images.javatpoint.com/top10-technologies/images/top-10-hollywood-actress3-2.png",
+            "https://digitalcrime.news/wp-content/uploads/2022/08/main-qimg-271d70a01d99e5f5c5e2fda89d9e9711-lq.jpg",
         },
         {
           _id: "4",
           avatar:
-            "https://images.javatpoint.com/top10-technologies/images/top-10-hollywood-actress3-2.png",
+            "https://digitalcrime.news/wp-content/uploads/2022/08/main-qimg-271d70a01d99e5f5c5e2fda89d9e9711-lq.jpg",
         },
       ],
       totalMessages: 55,
@@ -224,12 +224,12 @@ export const DashboardData = {
         {
           _id: "3",
           avatar:
-            "https://images.javatpoint.com/top10-technologies/images/top-10-hollywood-actress3-2.png",
+            "https://digitalcrime.news/wp-content/uploads/2022/08/main-qimg-271d70a01d99e5f5c5e2fda89d9e9711-lq.jpg",
         },
         {
           _id: "4",
           avatar:
-            "https://images.javatpoint.com/top10-technologies/images/top-10-hollywood-actress3-2.png",
+            "https://digitalcrime.news/wp-content/uploads/2022/08/main-qimg-271d70a01d99e5f5c5e2fda89d9e9711-lq.jpg",
         },
       ],
       totalMessages: 55,
