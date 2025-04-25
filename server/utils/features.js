@@ -1,5 +1,11 @@
 import mongoose from "mongoose"
 import jwt from "jsonwebtoken";
+
+import {v2 as cloudinary } from 'cloudinary';
+import { v4 as uuid} from "uuid"
+import { getBase64 } from "../libs/helper.js";
+
+
 const cookieOptions={
     maxAge:60*60*24*1000*15,
     httpOnly:true,
@@ -22,6 +28,7 @@ const setCookie=async (res,user,message,statusCode)=>{
 
     return res.status(statusCode).cookie("Chat-token",token,cookieOptions).json({
         success:true,
+        user,
         message
     })
   
@@ -33,12 +40,60 @@ const emitEvent=(req,event,users,data)=>{
 }
 
 
+const uploadFilesToCloudinary=async (files=[])=>{
+    const uploadPromises=files.map((file)=>{
+        return new Promise((resolve,reject)=>{
+            console.log("hello");
+            cloudinary.uploader.upload(getBase64(file),{
+                resource_type:"auto",
+                public_id:uuid(),
+
+
+            },
+            (error,result)=>{
+                if (error) return reject(error);
+                resolve(result);
+            }
+        )
+
+        }
+    )
+}
+    )
+
+    console.log("hi");
+
+    console.log(uploadPromises);
+
+    try {
+        const results=await Promise.all(uploadPromises);
+        console.log(results);
+        const formattedResults=results.map((result)=>({
+            public_id:result.public_id,
+            url:result.url
+
+        }))
+
+
+        console.log("I got results");
+
+        console.log(formattedResults)
+        return formattedResults;
+        
+    } catch (error) {
+        throw new Error("Error uploading files to cloudinary",error);
+        
+    }
+
+}
+
+
 const deleteFilesFromCloudinary=async (public_ids)=>{
 
 }
 
 
 export {
-    connectDB,setCookie,emitEvent,deleteFilesFromCloudinary,cookieOptions
+    connectDB,setCookie,emitEvent,deleteFilesFromCloudinary,cookieOptions,uploadFilesToCloudinary
 }
 

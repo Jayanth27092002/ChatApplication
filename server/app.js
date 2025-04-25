@@ -2,6 +2,8 @@ import express from "express";
 import chatRoutes from "./routes/chatRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 
+import {v2 as cloudinary} from "cloudinary";
+
 import adminRoutes from "./routes/adminRoutes.js";
 import { connectDB } from "./utils/features.js";
 import { configDotenv } from "dotenv";
@@ -33,7 +35,15 @@ const userSocketIds = new Map();
 const adminSecretKey = process.env.ADMIN_SECRET_KEY || "DJVarma";
 connectDB(MONGO_URI);
 
+cloudinary.config({
+  cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:process.env.CLOUDINARY_API_KEY,
+  api_secret:process.env.CLOUDINARY_API_SECRET,
+})
+
 const app = express();
+
+
 
 const server = createServer(app);
 

@@ -15,7 +15,7 @@ const ChatList = ({w="100%",chats=sampleChats,chatId,onlineUsers=[],newMessagesA
           const newMessageAlert=newMessagesAlert.find((alert)=>alert.chatId===_id);
 
           const isOnline=members?.some((member)=>onlineUsers.includes(_id));
-          console.log(isOnline);
+         
             return (
 
              

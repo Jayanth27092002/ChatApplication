@@ -29,6 +29,12 @@ const schema= new Schema({
 
     },
 
+    contact:{
+
+        type:String,
+        required:true,
+    },
+
     avatar:{
 
         public_id:{

@@ -9,6 +9,11 @@ const SearchMenu=lazy(()=>import("../specific/SearchMenu"))
 const NotificationsMenu=lazy(()=>import("../specific/NotificationsMenu"))
 
 const NewGroupMenu=lazy(()=>import("../specific/NewGroupMenu"))
+import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast'
+import { useDispatch } from 'react-redux';
+import { userNotExists } from '../../redux/auth'
+import { server } from '../../constants/config'
 
 
 const NavIconButton=({title,icon,Handler})=>{
@@ -29,6 +34,8 @@ const NavIconButton=({title,icon,Handler})=>{
 
 
 const Header = () => {
+
+  const dispatch=useDispatch();
 
 
 
@@ -68,8 +75,29 @@ const Header = () => {
 
   }
 
-  const LogoutHandler=()=>{
+  const LogoutHandler=async()=>{
     console.log("Logout")
+     
+    try{
+      const {data}=await axios.get(`${server}/api/v1/users/logout`,{
+        withCredentials:true
+      });
+     
+      dispatch(userNotExists());
+      toast.success(data.message);
+
+    }
+    catch(error){
+
+      toast.error(error.response.data.message);
+
+    }
+    
+
+
+    
+
+
 
   }
 

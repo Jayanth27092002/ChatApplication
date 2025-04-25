@@ -12,7 +12,7 @@ import {useDispatch,useSelector} from "react-redux"
 
 import axios from "axios";
 import { server } from "./constants/config.js";
-import { userNotExists } from "./redux/auth.js";
+import { userExists, userNotExists } from "./redux/auth.js";
 
 const Home = lazy(() => import("./pages/Home.jsx"));
 const Login = lazy(() => import("./pages/Login.jsx"));
@@ -40,13 +40,13 @@ function App() {
   const dispatch=useDispatch();
 
   useEffect(() => {
-    console.log(server);
+   
 
     axios
-      .get(`${server}/api/v1/users/me`)
-      .then((res) => console.log(res))
+      .get(`${server}/api/v1/users/me`,{withCredentials:true})
+      .then(({data}) => dispatch(userExists(data.user)))
       .catch((error) => dispatch(userNotExists()));
-  }, []);
+  }, [dispatch]);
 
   return ( loader? <LayoutLoader/>: 
     <>

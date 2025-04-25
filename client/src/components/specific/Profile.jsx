@@ -2,10 +2,14 @@ import { Avatar, Stack, Typography } from '@mui/material'
 import React from 'react'
 import moment  from "moment"
 import {Face as FaceIcon,AlternateEmail as EmailIcon,CalendarMonth as CalendarIcon } from "@mui/icons-material"
+import { useSelector } from 'react-redux';
+import LayoutLoader from '../loaders/LayoutLoader';
 
 
 
 const ProfileCard=({text,icon,heading})=>{
+
+  
 
     return (
         <Stack direction={"row"} spacing={"1rem"} textAlign={"center"} color={"white"} >
@@ -21,11 +25,16 @@ const ProfileCard=({text,icon,heading})=>{
 
 }
 
-const Profile = () => {
-  return (
+const Profile = ({}) => {
+  const {user}=useSelector((state)=>state.auth);
+
+  
+  return  ( !user ?<LayoutLoader/> :
     
     <Stack spacing={"2rem"} alignItems={'center'}>
-    <Avatar sx={{
+    <Avatar
+    src={user.avatar.url}
+     sx={{
         height:"10rem",
         width:"10rem",
         border:"2px solid white",
@@ -33,12 +42,12 @@ const Profile = () => {
         marginBottom:"1rem"
     }} />
      
-    <ProfileCard heading={"BIO"} text={"Fucking my Life"} /> 
-    <ProfileCard heading={"name"} text={"Jayanth varma"} icon={<FaceIcon/>}/>
-    <ProfileCard heading={"Contact"} text={"dantuurijayanth1@gmail.com"} icon={<EmailIcon/>}/> 
+    <ProfileCard heading={"BIO"} text={user.bio} /> 
+    <ProfileCard heading={"name"} text={user.name} icon={<FaceIcon/>}/>
+    <ProfileCard heading={"Contact"} text={user.contact} icon={<EmailIcon/>}/> 
     
 
-    <ProfileCard heading={"Joined"} text={moment('1970-01-01T00:00:02.012Z').fromNow()} icon={<CalendarIcon/>}/> 
+    <ProfileCard heading={"Joined"} text={moment(user.createdAt).fromNow()} icon={<CalendarIcon/>}/> 
 
  
     </Stack>

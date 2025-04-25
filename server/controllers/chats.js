@@ -66,7 +66,8 @@ const myChats = tryCatch(async (req, res, next) => {
 
   res.status(200).json({
     success: "true",
-    message: transformedChats,
+    message: "Your chats fetched",
+    yourchats:transformedChats,
   });
 });
 

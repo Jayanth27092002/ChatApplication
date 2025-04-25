@@ -1,28 +1,39 @@
 import mongoose from "mongoose";
 import { User } from "../models/userModel.js";
-import { emitEvent, setCookie } from "../utils/features.js";
+import { emitEvent, setCookie, uploadFilesToCloudinary } from "../utils/features.js";
 import { compare } from "bcrypt";
 import { tryCatch } from "../middlewares/error.js";
 import { CustomError } from "../utils/utilityclass.js";
 import { Chat } from "../models/chatModel.js";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
 import { Request } from "../models/requestModel.js";
-import { otherMember } from "../libs/helper.js";
+import { otherMember,getBase64 } from "../libs/helper.js";
 import { ResultWithContextImpl } from "express-validator/lib/chain/context-runner-impl.js";
 
 ///register new user and create a cookie for user
 
 const newUser = tryCatch(async (req, res, next) => {
-  const { name, username, password, bio } = req.body;
+  console.log("This function is called");
+  const { name, username, password, bio,contact } = req.body;
+
+  console.log("HOIIIIIIII");
 
 
   const file=req.file;
 
+  console.log(file);
+
   if(!file) return  next(new CustomError("File needed",400));
 
+  console.log("3");
+
+  const result=await uploadFilesToCloudinary([file]);
+
+  
+
   const avatar = {
-    public_id: "sdfd",
-    url: "sdef",
+    public_id: result[0].public_id,
+    url: result[0].url,
   };
 
   const user = await User.create({
@@ -31,6 +42,7 @@ const newUser = tryCatch(async (req, res, next) => {
     password,
     bio,
     avatar,
+    contact
   });
 
   setCookie(res, user, "User created Successfully", 201);
@@ -68,6 +80,7 @@ const getMyProfile = tryCatch(async (req, res, next) => {
 });
 
 const logout = (req, res, next) => {
+  
   res.clearCookie("Chat-token").json({
     message: "Logout successfully",
     success: true,
