@@ -41,6 +41,8 @@ const newUser = tryCatch(async (req, res, next) => {
 const login = tryCatch(async (req, res, next) => {
   const { username, password } = req.body;
 
+  console.log(username,password);
+
   const user = await User.findOne({ username }).select("+password");
 
   if (!user) return next(new CustomError("Invalid username", 401));

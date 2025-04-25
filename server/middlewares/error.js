@@ -6,6 +6,8 @@ export const errorMiddleware=(err,req,res,next)=>{
 
     err.statusCode||=500;
 
+    console.log(err);
+
 
     if(err.code===11000){
         const error=Object.keys(err.keyPattern).join(",");

@@ -6,8 +6,11 @@ import { adminSecretKey } from "../app.js";
 
 export const isAuntheticated = tryCatch(async (req, res, next) => {
   const token = req.cookies["Chat-token"];
+  console.log("Authenticated1");
 
   if (!token) return next(new CustomError("Login first", 401));
+
+  console.log("Autheticated2");
 
   const decoded_data = jwt.verify(token, process.env.JWT_SECRETKEY);
   req.user = decoded_data._id;

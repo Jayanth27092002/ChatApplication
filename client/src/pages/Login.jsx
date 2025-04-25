@@ -15,10 +15,17 @@ import { CameraAlt } from "@mui/icons-material";
 import { HiddenStyledComponent } from "../components/Styles/StyledComponent";
 import {isValidUsername, useFileHandler, useInputValidation,useStrongPassword} from "6pp"
 import { usernameValidator } from "../utils/validators.js";
+import axios from "axios";
+import { server } from "../constants/config.js";
+import { useDispatch  } from "react-redux"
+import { userExists } from "../redux/auth.js";
+import toast from "react-hot-toast";
 
 
 const Login = () => {
-  const [isLogin,setisLogin]=useState("");
+  
+  const [isLogin,setisLogin]=useState(true);
+  const dispatch=useDispatch();
   const toggleLogin = () => setisLogin((prev) => !prev);
 
   const name=useInputValidation("",);
@@ -29,8 +36,37 @@ const Login = () => {
   const avatar=useFileHandler("single",1)
 
 
-  const loginHandler=(e)=>{
+  const loginHandler=async(e)=>{
     e.preventDefault();
+  
+
+    console.log("hello");
+
+    try {
+
+      const {data}=await axios.post(`${server}/api/v1/users/login`,{username:username.value,password:password.value},{
+        withCredentials:true,
+        headers:{
+        
+          'Content-Type':'application/json',
+          
+        }
+      });
+
+      dispatch(userExists(true));
+      toast.success(data.message);
+  
+      
+    } catch (error) {
+
+      toast.error(error?.response?.data?.message || "Something Went wrong");
+      
+    }
+   
+   
+
+    
+    
 
   }
 
@@ -65,7 +101,7 @@ const Login = () => {
           {isLogin ? (
             <>
               <Typography variant="h5">Login</Typography>
-              <form style={{ width: "100%", marginTop: "1rem" }}>
+              <form style={{ width: "100%", marginTop: "1rem" }} onSubmit={loginHandler}>
                 <TextField
                   required
                   fullWidth
@@ -93,7 +129,7 @@ const Login = () => {
                   variant="contained"
                   color="primary"
                   type="submit"
-                  onSubmit={loginHandler}
+                 
                 >
                   Login
                 </Button>
