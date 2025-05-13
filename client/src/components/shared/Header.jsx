@@ -1,4 +1,4 @@
-import { AppBar, Backdrop, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material'
+import { AppBar, Backdrop, Badge, Box, IconButton, Toolbar, Tooltip, Typography } from '@mui/material'
 import React, { lazy, Suspense, useState } from 'react'
 import {Menu as MenuIcon,Search as SearchIcon,Add as AddIcon,Group as GroupIcon,Logout as LogoutIcon,Notifications as NotificationIcon} from "@mui/icons-material"
 import { useNavigate } from 'react-router-dom'
@@ -11,17 +11,25 @@ const NotificationsMenu=lazy(()=>import("../specific/NotificationsMenu"))
 const NewGroupMenu=lazy(()=>import("../specific/NewGroupMenu"))
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { userNotExists } from '../../redux/auth'
 import { server } from '../../constants/config'
+import { setIsMobileMenu, setIsNewGroup, setIsNotification, setIsSearch } from '../../redux/misc'
+import { resetNotification } from '../../redux/chat'
 
 
-const NavIconButton=({title,icon,Handler})=>{
+const NavIconButton=({title,icon,Handler,count=0})=>{
   return (
     
       <Tooltip title={title}>
       <IconButton color="inherit" size="large" onClick={Handler}>
+        <Badge badgeContent={count} color='error' >
+        
+        
         {icon}
+
+        </Badge>
+        
       </IconButton>
 
       </Tooltip>
@@ -40,32 +48,42 @@ const Header = () => {
 
 
   const navigate=useNavigate();
-  const [isMobile,setIsMobile]=useState(false);
-  const [isSearch,setIsSearch]=useState(false);
-  const [isNewGroup,setIsNewGroup]=useState(false);
-  const [isNotification,setIsNotification]=useState(false);
+
+  const {isSearch,isNotification,isNewGroup}=useSelector((state)=>state.misc);
+
+  
+
+  const {notificationCount}=useSelector((state)=>state.chat);
+
+
+ 
+  
+ 
 
   
 
   const handleMobile=()=>{
-    console.log("HandleMobile");
-    setIsMobile(prev=>!prev);
+    console.log("Handle MOBILE");
+     dispatch(setIsMobileMenu(true));
   }
 
  
   const SearchDialog=()=>{
-    console.log("SearchDIalog")
-    setIsSearch(prev=>!prev);
+    console.log("SearchDialog")
+    dispatch(setIsSearch(true));
   }
 
   const NewgroupOpen=()=>{
-    console.log("newGroupOpen")
-    setIsNewGroup(prev=>!prev);
+
+    dispatch(setIsNewGroup(true));
+    
+   
 
   }
 
   const OpenNotification=()=>{
-    setIsNotification(prev=>!prev)
+    dispatch(setIsNotification(true));
+    dispatch(resetNotification());
   }
 
 
@@ -134,7 +152,7 @@ const Header = () => {
 
         <NavIconButton title={"Manage Group"} icon={ <GroupIcon/>} Handler={NavigateToGroup} />
 
-        <NavIconButton title={"Notifications" } icon={<NotificationIcon/> } Handler={OpenNotification}  />
+        <NavIconButton title={"Notifications" } count={notificationCount} icon={<NotificationIcon/> } Handler={OpenNotification}  />
         
 
         <NavIconButton title={"Logout"} icon={<LogoutIcon/>} Handler={LogoutHandler} />

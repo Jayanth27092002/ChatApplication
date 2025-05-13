@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import AdminLayout from '../../components/layout/AdminLayout'
-import AdminTable from '../../components/specific/AdminComponents/AdminTable'
 import { Avatar } from '@mui/material'
-import { useEffect } from 'react'
-import { DashboardData } from '../../constants/sampleData'
+import { useEffect, useState } from 'react'
+import AdminLayout from '../../components/layout/AdminLayout'
 import { transformImage } from '../../components/libs/fileformat'
+import AdminTable from '../../components/specific/AdminComponents/AdminTable'
+import { useErrors } from '../../hooks/hooks'
+import { useGetAllUsersQuery } from '../../redux/api/api'
 
 
 
@@ -55,17 +55,24 @@ const columns=[
 
 const UsersManagement = () => {
 
+  const {isLoading,isError,error,data}=useGetAllUsersQuery();
+  const {transformedUsers=[]}=data || {};
+
+  const errors=[{isError,error}];
+      
+    useErrors(errors);
+    
 
   const [rows,setRows]=useState([]);
 
   useEffect(()=>{
 
 
-    setRows(DashboardData.Adminusers.map((i)=>({...i,id:i._id,avatar:transformImage(i.avatar,50)})));
+    setRows(transformedUsers?.map((i)=>({...i,id:i._id,avatar:transformImage(i.avatar,250)})));
 
 
 
-  },[])
+  },[transformedUsers])
 
    
   return (

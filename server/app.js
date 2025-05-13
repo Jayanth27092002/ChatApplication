@@ -2,7 +2,7 @@ import express from "express";
 import chatRoutes from "./routes/chatRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 
-import {v2 as cloudinary} from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 
 import adminRoutes from "./routes/adminRoutes.js";
 import { connectDB } from "./utils/features.js";
@@ -17,9 +17,11 @@ import cors from "cors";
 import { v4 as uuid } from "uuid";
 
 import { createServer } from "http";
-import { NEW_MESSAGE } from "./constants/events.js";
+import { CHAT_JOINED, CHAT_LEFT, NEW_MESSAGE, ONLINE_USERS, START_TYPING, STOP_TYPING } from "./constants/events.js";
 import { getSockets } from "./libs/helper.js";
 import { Message } from "./models/messageModel.js";
+import { corsOption } from "./constants/config.js";
+import { socketAuthenticator } from "./middlewares/auth.js";
 
 //connecting to mongodb
 configDotenv({
@@ -32,33 +34,32 @@ const envMode = process.env.NODE_ENV || "PRODUCTION";
 
 const userSocketIds = new Map();
 
+const onlineUsers=new Set();
+
 const adminSecretKey = process.env.ADMIN_SECRET_KEY || "DJVarma";
 connectDB(MONGO_URI);
 
 cloudinary.config({
-  cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
-  api_key:process.env.CLOUDINARY_API_KEY,
-  api_secret:process.env.CLOUDINARY_API_SECRET,
-})
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const app = express();
 
-
-
 const server = createServer(app);
 
-const io = new Server(server, {});
+const io = new Server(server, {
+  cors:corsOption ,
+});
 
+
+app.set("io",io);
 //MiddleWares
 
 app.use(express.json());
 
-app.use(cors({
-  origin:["http://localhost:5173","http://localhost:4000",process.env.CLIENT_URL],
-  credentials:true
-}))
-
-
+app.use(cors(corsOption));
 
 app.use(cookieParser());
 
@@ -73,15 +74,38 @@ app.get("/", (req, res) => {
   res.send("Hello man");
 });
 
+
+io.use((socket,next)=>{
+  cookieParser()(socket.request,socket.request.res,async(err)=>await socketAuthenticator(err,socket,next)
+    
+  )
+})
+
 io.on("connection", (socket) => {
   console.log("a user connected", socket.id);
 
-  const user = {
-    _id: "asdsa",
-    name: "Jay",
-  };
+  const user = socket.user;
+  
 
-  userSocketIds.set(user._id.toString(), socket.id);
+
+  userSocketIds.set(user?._id.toString(), socket.id);
+
+  onlineUsers.add(user._id.toString());
+  io.emit(ONLINE_USERS, Array.from(onlineUsers));
+
+
+  socket.on(START_TYPING,({chatId,members})=>{
+
+    const memberSockets=getSockets(members);
+
+    socket.to(memberSockets).emit(START_TYPING,{chatId});
+    
+})
+
+socket.on(STOP_TYPING,({chatId,members})=>{
+  const memberSockets=getSockets(members);
+  socket.to(memberSockets).emit(STOP_TYPING,{chatId});
+})
 
   socket.on(NEW_MESSAGE, async ({ chatId, members, message }) => {
     const messageForRealTime = {
@@ -90,7 +114,6 @@ io.on("connection", (socket) => {
       sender: {
         _id: user._id,
         name: user.name,
-        
       },
       chat: chatId,
       createdAt: new Date().toISOString(),
@@ -103,6 +126,7 @@ io.on("connection", (socket) => {
     };
 
     const membersSockets = getSockets(members);
+    console.log(membersSockets);
     io.to(membersSockets).emit(NEW_MESSAGE, {
       chatId,
       message: messageForRealTime,
@@ -116,12 +140,27 @@ io.on("connection", (socket) => {
       console.log(error);
     }
 
-    console.log("NEW MESSAGE", messageForRealTime);
+   
   });
+
+  socket.on(CHAT_JOINED, ({userId, members}) => {
+    // No need to add to onlineUsers again - already done on connection
+    const memberSockets = getSockets(members);
+    socket.to(memberSockets).emit(ONLINE_USERS, Array.from(onlineUsers));
+  });
+
+  // When user leaves a specific chat
+  socket.on(CHAT_LEFT, ({userId, members}) => {
+    const memberSockets = getSockets(members);
+    socket.to(memberSockets).emit(ONLINE_USERS, Array.from(onlineUsers));
+  });
+  
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
+    onlineUsers.delete(user._id.toString());
     userSocketIds.delete(user._id.toString());
+    io.emit(ONLINE_USERS, Array.from(onlineUsers));
   });
 });
 

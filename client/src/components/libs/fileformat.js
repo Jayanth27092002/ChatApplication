@@ -18,7 +18,11 @@ export const fileformat=(url="")=>{
 }
 
 
-export const transformImage=(url="",width=100)=>url;
+export const transformImage=(url="",width=100)=>{
+    const newUrl=url.replace("upload/",`upload/dpr_auto/w_${width}/`);
+
+    return newUrl;
+};
 
 
 
@@ -38,4 +42,19 @@ export const  Last7days=()=>{
      return last7days;
 
      
+}
+
+
+export const getOrSaveFromStorage=(key,value,get)=>{
+
+    if(get){
+
+        return localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)):null
+
+    }
+    else{
+        localStorage.setItem(key,JSON.stringify(value));
+
+    }
+
 }

@@ -15,7 +15,7 @@ const schema=Schema({
 
     groupChat:{
         type:Boolean,
-        defaut:false,
+        default:false,
     },
 
     members:[{

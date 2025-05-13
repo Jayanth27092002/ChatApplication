@@ -4,6 +4,7 @@ import moment  from "moment"
 import {Face as FaceIcon,AlternateEmail as EmailIcon,CalendarMonth as CalendarIcon } from "@mui/icons-material"
 import { useSelector } from 'react-redux';
 import LayoutLoader from '../loaders/LayoutLoader';
+import { transformImage } from '../libs/fileformat';
 
 
 
@@ -24,6 +25,7 @@ const ProfileCard=({text,icon,heading})=>{
     )
 
 }
+
 
 const Profile = ({}) => {
   const {user}=useSelector((state)=>state.auth);

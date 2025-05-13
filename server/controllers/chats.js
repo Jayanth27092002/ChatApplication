@@ -1,6 +1,7 @@
 import {
   ALERT,
   NEW_ATTACHMENT,
+  NEW_MESSAGE,
   NEW_MESSAGE_ALERT,
   REFETCH_CHATS,
 } from "../constants/events.js";
@@ -9,7 +10,7 @@ import { tryCatch } from "../middlewares/error.js";
 import { Chat } from "../models/chatModel.js";
 import { Message } from "../models/messageModel.js";
 import { User } from "../models/userModel.js";
-import { deleteFilesFromCloudinary, emitEvent } from "../utils/features.js";
+import { deleteFilesFromCloudinary, emitEvent, uploadFilesToCloudinary } from "../utils/features.js";
 import { CustomError } from "../utils/utilityclass.js";
 
 const newGroupChat = tryCatch(async (req, res, next) => {
@@ -29,7 +30,7 @@ const newGroupChat = tryCatch(async (req, res, next) => {
     members: allmembers,
   });
 
-  emitEvent(req, ALERT, allmembers, `Welcome to ${name} group chat `);
+  emitEvent(req, ALERT, allmembers, {message:`Welcome to ${name} group chat `});
   emitEvent(req, REFETCH_CHATS, members);
 
   return res.status(201).json({
@@ -126,7 +127,7 @@ const addMembers = tryCatch(async (req, res, next) => {
     req,
     ALERT,
     chat.members,
-    `${allUsersName} has been added in the group `
+    {chatId,message:`${allUsersName} has been added in the group `}
   );
 
   emitEvent(req, REFETCH_CHATS, chat.members);
@@ -162,6 +163,11 @@ const removeMember = tryCatch(async (req, res, next) => {
     return next(new CustomError("Group must have atleast 3 members", 400));
   }
 
+
+  const allMembers=chat.members.map((i)=>i.toString());
+
+  console.log(allMembers);
+
   chat.members = chat.members.filter(
     (member) => member.toString() !== userId.toString()
   );
@@ -172,10 +178,10 @@ const removeMember = tryCatch(async (req, res, next) => {
     req,
     ALERT,
     chat.members,
-    `${userThatWillBeRemoved.name} has been removed from the group`
+    {chatId,message:`${userThatWillBeRemoved.name} has been removed from the group`}
   );
 
-  emitEvent(req, REFETCH_CHATS, chat.members);
+  emitEvent(req, REFETCH_CHATS, allMembers);
 
   return res.status(200).json({
     success: true,
@@ -214,7 +220,7 @@ const leaveGroup = tryCatch(async (req, res, next) => {
 
   await chat.save();
 
-  emitEvent(req, ALERT, chat.members, `${user.name} left the group`);
+  emitEvent(req, ALERT, chat.members, {chatId,message:`${user.name} left the group`});
 
   return res.status(200).json({
     success: true,
@@ -225,6 +231,8 @@ const leaveGroup = tryCatch(async (req, res, next) => {
 const sendAttachments = tryCatch(async (req, res, next) => {
   const { chatId } = req.body;
   const files = req.files || [];
+
+  console.log(files);
 
   
 
@@ -244,11 +252,14 @@ const sendAttachments = tryCatch(async (req, res, next) => {
 
   //Upload files here
 
+  const attachments =await uploadFilesToCloudinary(files);
+
+
+
   if (files.length < 1)
     return next(new CustomError("please provide Attachments", 400));
 
-  const attachments = ["lol", "lol", "lol"];
-
+  
   const messageForDb = {
     content: "",
     attachments,
@@ -266,7 +277,7 @@ const sendAttachments = tryCatch(async (req, res, next) => {
 
   const message = await Message.create(messageForDb);
 
-  emitEvent(req, NEW_ATTACHMENT, chat.members, {
+  emitEvent(req, NEW_MESSAGE, chat.members, {
     message: messageForRealTime,
     chatId,
   });
@@ -286,6 +297,8 @@ const getChatDetails = tryCatch(async (req, res, next) => {
       .lean();
 
     if (!chat) return next(new CustomError("Chat not found", 404));
+
+
 
     chat.members = chat.members.map(({ _id, name, avatar }) => ({
       _id,
@@ -383,6 +396,12 @@ const deleteChat = tryCatch(async (req, res, next) => {
 const getMessages = tryCatch(async (req, res, next) => {
   const chatId = req.params.id;
 
+  const chat=await Chat.findById(chatId);
+
+  if(!chat) return next(new CustomError("Chat not found",404));
+
+  if(!chat?.members.includes(req.user.toString())) return next( new CustomError("You are not part of this chat",401));
+
   const { page = 1 } = req.query;
 
   const limit = 20;
@@ -399,7 +418,7 @@ const getMessages = tryCatch(async (req, res, next) => {
   ]);
 
   const totalPages = Math.ceil(totalMessagesCount / limit);
-
+  
   return res.status(200).json({
     success: true,
     messages: messages.reverse(),

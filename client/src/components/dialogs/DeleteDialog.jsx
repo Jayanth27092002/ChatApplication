@@ -1,9 +1,20 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack } from '@mui/material'
 import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setIsDeleteMenu } from '../../redux/misc';
 
-const DeleteDialog = ({deleteHandler,closeHandler}) => {
+const DeleteDialog = ({deleteHandler,loadingHandler}) => {
+  const {isDeleteMenu}=useSelector((state)=>state.misc);
+  const dispatch=useDispatch();
+
+
+  const closeHandler=()=>{
+
+    dispatch(setIsDeleteMenu(false));
+    
+  }
   return (
-    <Dialog open onClose={closeHandler}>
+    <Dialog open={isDeleteMenu} onClose={closeHandler}>
     <DialogTitle>Confirm Delete</DialogTitle>
     <DialogContent>
     <DialogContentText>
@@ -15,8 +26,8 @@ const DeleteDialog = ({deleteHandler,closeHandler}) => {
     
     <DialogActions>
 
-    <Button  color='error' onClick={deleteHandler}>Yes</Button>
-    <Button   onClick={closeHandler}>No</Button>
+    <Button  disabled={loadingHandler} color='error' onClick={deleteHandler}>Yes</Button>
+    <Button   onClick={closeHandler} disabled={loadingHandler}>No</Button>
 
     </DialogActions>
 

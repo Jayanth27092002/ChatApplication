@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
 import AdminTable from "../../components/specific/AdminComponents/AdminTable";
-import { Avatar, Stack } from "@mui/material";
+import { Avatar, Skeleton, Stack } from "@mui/material";
 import { useEffect } from "react";
 import { DashboardData } from "../../constants/sampleData";
 import { transformImage } from "../../components/libs/fileformat";
 import AvatarCard from "../../components/shared/AvatarCard";
+import { useGetAllChatsQuery } from "../../redux/api/api";
+import LayoutLoader from './../../components/loaders/LayoutLoader';
+import { useErrors } from "../../hooks/hooks";
 
 const columns = [
   {
@@ -66,24 +69,34 @@ const columns = [
 ];
 
 const ChatManagement = () => {
+
+  const {isLoading,data,isError,error}=useGetAllChatsQuery();
+  const {transformedChats=[]}=data || {};
   const [rows, setRows] = useState([]);
+
+   const errors=[{isError,error}];
+    
+    useErrors(errors);
+  
+
+  console.log(transformedChats);
 
   useEffect(() => {
     setRows(
-      DashboardData.AdminChats.map((i) => ({
+    transformedChats?.map((i) => ({
         ...i,
         id: i._id,
-        avatar: i.avatar.map((image) => transformImage(image, 50)),
-        members: i.members.map((i) => transformImage(i.avatar, 50)),
+        avatar: i?.avatar?.map((image) => transformImage(image, 150)),
+        members: i?.members?.map((i) => transformImage(i?.avatar, 150)),
         creator: {
           name: i.creator.name,
-          avatar: transformImage(i.creator.avatar, 50),
+          avatar:i.creator.avatar,
         },
       }))
     );
-  }, []);
+  }, [transformedChats]);
 
-  return (
+  return isLoading ? <Skeleton height={"100vh"}/>:(
     <AdminLayout>
       <AdminTable columns={columns} rows={rows} heading={"Chats"} />
     </AdminLayout>

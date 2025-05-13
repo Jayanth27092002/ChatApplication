@@ -3,6 +3,9 @@ import jwt from "jsonwebtoken";
 import { tryCatch } from "./error.js";
 import { CustomError } from "../utils/utilityclass.js";
 import { adminSecretKey } from "../app.js";
+import { CHATTUTOKEN } from "../constants/config.js";
+import { User } from "../models/userModel.js";
+
 
 export const isAuntheticated = tryCatch(async (req, res, next) => {
   const token = req.cookies["Chat-token"];
@@ -41,5 +44,34 @@ export const isAdmin = tryCatch(async (req, res, next) => {
 
  
 });
+
+
+
+export const socketAuthenticator=async(err,socket,next)=>{
+  try {
+    if (err) return next(err);
+
+    const authToken=socket.request.cookies[CHATTUTOKEN];
+
+    if(!authToken) return next(new CustomError("Please Login to access this route",401));
+    
+    const decodedData=jwt.verify(authToken,process.env.JWT_SECRETKEY);
+
+    const user =await User.findById(decodedData._id);
+
+    if(!user) return next(new CustomError("User not found"));
+
+
+    socket.user=user;
+    return next();
+  } catch (error) {
+
+    console.log(error);
+    return next(new CustomError("Please login to access this",401));
+    
+  }
+
+
+}
 
 

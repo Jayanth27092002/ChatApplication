@@ -7,7 +7,7 @@ return (
    <ListItem>
 
     <Stack  direction={"row"} alignItems={"center"} spacing={"1rem"} width={"100%"} >
-   <Avatar/>
+   <Avatar src={avatar}/>
 
    <Typography variant="body1" sx={{
     flexGrow:1,
@@ -26,8 +26,8 @@ return (
     }
    >
 
-   <Button  onClick={()=>handler({id,accept:true})}>Accept</Button>
-  <Button color='error'  onClick={()=>handler({id,accept:false})}>Reject</Button>
+   <Button  onClick={()=>handler({_id:id,accept:true})}>Accept</Button>
+  <Button color='error'  onClick={()=>handler({_id:id,accept:false})}>Reject</Button>
 
 
    </Stack>

@@ -97,7 +97,7 @@ const sendFriendRequest = tryCatch(async (req, res, next) => {
     ],
   });
 
-  if (request) return next(new CustomError("Request already exists", 400));
+  if (request) return next(new CustomError("You have already requested", 400));
 
   await Request.create({
     sender: req.user,
@@ -157,14 +157,16 @@ const searchUser = tryCatch(async (req, res) => {
 
   const myChats = await Chat.find({ groupChat: false, members: req.user });
 
-  const allUsersFromMyChats = myChats.flatMap((chat) => chat.members);
+  const allUsersFromMyChats = myChats.flatMap((chat) => chat.members.filter((id)=>id.toString()!=req.user.toString()));
 
   const allUsersExceptMeAndFriends = await User.find({
-    _id: { $nin: allUsersFromMyChats },
+    _id: { $nin:[...allUsersFromMyChats,req.user] },
     name: { $regex: name, $options: "i" },
   });
 
-  const users = allUsersExceptMeAndFriends.map((_id, name, avatar) => ({
+  console.log(allUsersExceptMeAndFriends);
+
+  const users = allUsersExceptMeAndFriends.map(({_id, name, avatar}) => ({
     _id,
     name,
     avatar: avatar.url,
@@ -199,10 +201,15 @@ const getMyNotifications = tryCatch(async (req, res, next) => {
 
 const getmyFriends = tryCatch(async (req, res, next) => {
   const chatId = req.query.chatId;
+  console.log(1);
+
   const chats = await Chat.find({
     members: req.user,
     groupChat: false,
   }).populate("members", "name avatar");
+
+  console.log(chats);
+  console.log(2);
 
   const friends = chats.map(({ members }) => {
     const otherUser = otherMember(members, req.user);
@@ -214,6 +221,8 @@ const getmyFriends = tryCatch(async (req, res, next) => {
     };
   });
 
+  console.log(friends);
+  console.log(3);
   if (chatId) {
     const chat = await Chat.findById(chatId);
 
@@ -227,7 +236,7 @@ const getmyFriends = tryCatch(async (req, res, next) => {
     });
   } else {
     return res.status(200).json({
-      sucess: true,
+      success: true,
       friends,
     });
   }

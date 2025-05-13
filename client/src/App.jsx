@@ -1,18 +1,20 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense, useEffect } from "react";
-import ProtectedRoute from "./components/Styles/auth/ProtectedRoute";
+import ProtectedRoute, { AdminProtectedRoute } from "./components/Styles/auth/ProtectedRoute";
 import LayoutLoader from "./components/loaders/LayoutLoader.jsx";
 import Chats from "./pages/Chats.jsx";
 import NewGroupMenu from "./components/specific/NewGroupMenu.jsx";
 import Groups from "./pages/Groups.jsx";
 
-import { Toaster} from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
-import {useDispatch,useSelector} from "react-redux"
+import { useDispatch, useSelector } from "react-redux";
 
 import axios from "axios";
 import { server } from "./constants/config.js";
 import { userExists, userNotExists } from "./redux/auth.js";
+import { SocketProvider } from "./Socket.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 const Home = lazy(() => import("./pages/Home.jsx"));
 const Login = lazy(() => import("./pages/Login.jsx"));
@@ -31,30 +33,32 @@ const AdminChatsMangement = lazy(() =>
 
 const AdminMessages = lazy(() => import("./pages/Admin/Messages.jsx"));
 
-
-
 function App() {
+  const { user, loader,isAdmin } = useSelector((state) => state.auth);
 
-  const {user,loader}=useSelector((state)=>state.auth);
-
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-   
-
     axios
-      .get(`${server}/api/v1/users/me`,{withCredentials:true})
-      .then(({data}) => dispatch(userExists(data.user)))
+      .get(`${server}/api/v1/users/me`, { withCredentials: true })
+      .then(({ data }) => dispatch(userExists(data.user)))
       .catch((error) => dispatch(userNotExists()));
   }, [dispatch]);
 
-  return ( loader? <LayoutLoader/>: 
+  return loader ? (
+    <LayoutLoader />
+  ) : (
     <>
-
       <BrowserRouter>
         <Suspense fallback={<LayoutLoader />}>
           <Routes>
-            <Route element={<ProtectedRoute user={user} />}>
+            <Route
+              element={
+                <SocketProvider>
+                  <ProtectedRoute user={user} />
+                </SocketProvider>
+              }
+            >
               <Route path="/" element={<Home />} />
 
               <Route path="/groups" element={<Groups />} />
@@ -72,8 +76,11 @@ function App() {
               }
             />
 
-            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
 
+            <Route element={<AdminProtectedRoute isAdmin={isAdmin}/>}>
+
+              
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
             <Route
@@ -86,9 +93,13 @@ function App() {
               element={<AdminChatsMangement />}
             />
             <Route path="/admin/messages" element={<AdminMessages />} />
+
+            </Route>
+            <Route path="*" element={<NotFound/>}/>
+
           </Routes>
         </Suspense>
-        <Toaster position="bottom-center"/>
+        <Toaster position="bottom-center" />
       </BrowserRouter>
     </>
   );

@@ -6,6 +6,8 @@ import { fileformat, transformImage } from "../../components/libs/fileformat";
 import moment from "moment";
 import { Avatar, Box, Stack } from "@mui/material";
 import RenderAttachment from "../../components/specific/RenderAttachment";
+import { useGetAllMessagesQuery } from "../../redux/api/api";
+import { useErrors } from "../../hooks/hooks";
 
 const columns = [
   {
@@ -75,6 +77,8 @@ const columns = [
     width: 100,
   },
 
+  
+
   {
     field: "createdAt",
     headerName: "Time",
@@ -86,17 +90,28 @@ const columns = [
 const Messages = () => {
   const [rows, setRows] = useState([]);
 
+  const {isLoading,data,isError,error}=useGetAllMessagesQuery();
+  const {transformedMessages=[]}=data || {};
+  const errors=[{isError,error}];
+      
+  useErrors(errors);
+    
+
+  
+
   useEffect(() => {
-    setRows(DashboardData.AdminMessages.map((i) => ({ ...i, id: i._id ,
+   
+
+    setRows(transformedMessages.map((i) => ({ ...i, id: i._id ,
       sender:{
         name:i.sender.name,
-        avatar:transformImage(i.sender.avatar,50),
+        avatar:transformImage(i.sender.avatar,150),
       },
       createdAt:moment(i.createdAt).format("MMMM Do YYYY,h:mm:ss a"),
       
 
     })));
-  }, []);
+  }, [transformedMessages]);
   return (
     <AdminLayout>
       <AdminTable rows={rows} columns={columns} heading={"All Messages"} rowHeight={200} />

@@ -5,14 +5,19 @@ import React from 'react'
 import { fileformat } from '../libs/fileformat';
 import RenderAttachment from './RenderAttachment';
 
+import { motion } from "framer-motion";
+
 const MessageComponent = ({message,user}) => {
   const {attachments,content,sender,createdAt}=message;
 
   const sameSender=sender?._id==user?._id;
-  console.log(sameSender);
+  
 
   return (
-    <div style={{
+    <motion.div 
+    initial={{opacity:0,x:"-100%"}}
+    whileInView={{opacity:1,x:0}}
+     style={{
       alignSelf:sameSender? 'flex-end':'flex-start',
       backgroundColor:'white',
       color:'black',
@@ -31,7 +36,7 @@ const MessageComponent = ({message,user}) => {
       }
 
       {
-        attachments.length>0 && attachments.map((attachment,index)=>{
+        attachments?.length>0 && attachments.map((attachment,index)=>{
 
           const {url}=attachment;
           const file=fileformat(url);
@@ -55,7 +60,7 @@ const MessageComponent = ({message,user}) => {
 
     </Stack>
 
-    </div>
+    </motion.div>
   )
 }
 

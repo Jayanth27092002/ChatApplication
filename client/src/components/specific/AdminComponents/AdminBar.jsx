@@ -1,7 +1,9 @@
 import { Dashboard as DashboardIcon, Group as GroupIcon, Logout as LogoutIcon, ManageAccounts as ManageAccountsIcon, Message as MessageIcon, } from '@mui/icons-material'
 import { Button, IconButton, Stack, styled, Typography } from '@mui/material'
 import React from 'react'
+import { useDispatch } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
+import { adminLogout } from '../../../redux/thunks/admin'
 
 
 
@@ -21,14 +23,23 @@ const AdminBar = ({w="100% "}) => {
 
     const location=useLocation();
 
-    const CustomButton=({btnname,icon,path})=>{
+    const dispatch=useDispatch();
+
+    const logoutHandler=()=>{
+        dispatch(adminLogout());
+
+    }
+
+
+
+    const CustomButton=({btnname,icon,path,handler})=>{
 
         return (
-            <CustomLink  to={path} sx={location.pathname==path && {
+            <CustomLink onClick={handler}  to={path} sx={location.pathname==path && {
                 bgcolor:"black",
                 color:"white"
             }}>
-                <Stack direction={"row"} alignItems={"center"} spacing={"1rem"}>
+                <Stack  direction={"row"} alignItems={"center"} spacing={"1rem"}>
                     {icon}
                     <Typography>{btnname}</Typography>
                 </Stack>
@@ -43,9 +54,9 @@ const AdminBar = ({w="100% "}) => {
         <Stack spacing={"2rem"} alignItems={"center"} width={"100%"} marginTop={"15vh"}>
         <CustomButton btnname={"Dashboard"} icon={<DashboardIcon/>} path={"/admin/dashboard"} />
         <CustomButton btnname={"User"} icon={<ManageAccountsIcon/>} path={"/admin/users-management"}/>
-        <CustomButton btnname={"Chats"} icon={<GroupIcon/>} path={"/admin/chats-management"}  />
+        <CustomButton btnname={"Chats"} icon={<GroupIcon/>} path={"/admin/chats-management"}   />
         <CustomButton btnname={"Msg"} icon={<MessageIcon/>}  path={"/admin/messages"}/>
-        <CustomButton btnname={"Logout"} icon={<LogoutIcon/>} path={"/"}/>
+        <CustomButton btnname={"Logout"} icon={<LogoutIcon/>}  path={"/admin/login"} handler={logoutHandler}/>
     
          </Stack>
 

@@ -8,6 +8,9 @@ import {HelmetProvider  } from "react-helmet-async";
 import {Provider} from "react-redux"
 import store  from './redux/store.js';
 
+
+
+document.addEventListener('contextmenu', (e) => e.preventDefault());
 createRoot(document.getElementById('root')).render(
   <StrictMode>
 

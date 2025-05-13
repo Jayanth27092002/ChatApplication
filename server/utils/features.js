@@ -3,7 +3,9 @@ import jwt from "jsonwebtoken";
 
 import {v2 as cloudinary } from 'cloudinary';
 import { v4 as uuid} from "uuid"
-import { getBase64 } from "../libs/helper.js";
+import { getBase64, getSockets } from "../libs/helper.js";
+import { io } from 'socket.io-client';
+import { request } from "express";
 
 
 const cookieOptions={
@@ -36,7 +38,10 @@ const setCookie=async (res,user,message,statusCode)=>{
 
 
 const emitEvent=(req,event,users,data)=>{
-    console.log("emitting event",event);
+    const io=req.app.get("io");
+    const userSockets=getSockets(users);
+
+    io.to(userSockets).emit(event,data);
 }
 
 
@@ -61,7 +66,7 @@ const uploadFilesToCloudinary=async (files=[])=>{
 }
     )
 
-    console.log("hi");
+   
 
     console.log(uploadPromises);
 
@@ -75,9 +80,8 @@ const uploadFilesToCloudinary=async (files=[])=>{
         }))
 
 
-        console.log("I got results");
 
-        console.log(formattedResults)
+      
         return formattedResults;
         
     } catch (error) {

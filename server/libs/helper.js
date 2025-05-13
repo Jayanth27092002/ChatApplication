@@ -9,7 +9,7 @@ const otherMember=(members,_id)=>{
 
 
 const getSockets=(users=[])=>{
-    const sockets=users.map((user)=>userSocketIds.get(user._id.toString()));
+    const sockets=users.map((user)=>userSocketIds.get(user.toString()));
 
     return sockets;
 }
@@ -19,5 +19,8 @@ const getBase64=(file)=>{
     return `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
 
 }
+
+
+
 
 export {otherMember,getSockets,getBase64}

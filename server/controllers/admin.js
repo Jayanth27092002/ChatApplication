@@ -142,6 +142,7 @@ const allMessages = tryCatch(async (req, res, next) => {
 });
 
 const getDashboardStats = tryCatch(async (req, res, next) => {
+  console.log("1");
   const [groupsCount, usersCount, messagesCount, totalChatsCount] =
     await Promise.all([
       Chat.countDocuments({ groupChat: true }),
@@ -150,8 +151,12 @@ const getDashboardStats = tryCatch(async (req, res, next) => {
       Chat.countDocuments(),
     ]);
 
+   console.log("2");
+
   const today = new Date();
   const last7Days = new Date();
+
+   console.log("3");
 
   last7Days.setDate(last7Days.getDate() - 7);
   const last7DaysMessages = await Message.find({
@@ -171,6 +176,8 @@ const getDashboardStats = tryCatch(async (req, res, next) => {
     const index = Math.floor(indexApprox);
     messages[6 - index]++;
   });
+
+   console.log("4");
 
   const stats = {
     groupsCount,

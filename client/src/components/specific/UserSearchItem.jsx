@@ -20,7 +20,7 @@ const UserSearchItem = ({
         width={"100%"}
         {...styling}
       >
-        <Avatar />
+        <Avatar src={avatar} />
 
         <Typography
           variant="body1"
@@ -48,6 +48,7 @@ const UserSearchItem = ({
             },
           }}
           onClick={() => Handler(_id)}
+          disabled={loadingFriendHandler}
         >
         {
          

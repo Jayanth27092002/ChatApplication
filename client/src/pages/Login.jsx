@@ -24,8 +24,9 @@ import axios from "axios";
 import { server } from "../constants/config.js";
 import { useDispatch } from "react-redux";
 import { userExists } from "../redux/auth.js";
-import toast from "react-hot-toast";
+
 import {  useNavigate } from 'react-router-dom';
+import toast from "react-hot-toast";
 
 const Login = () => {
   const navigate=useNavigate();
@@ -41,12 +42,16 @@ const Login = () => {
 
   const avatar = useFileHandler("single", 1);
 
+  const [isLoading,setIsLoading]=useState(false);
+
   const loginHandler = async (e) => {
     e.preventDefault();
 
+    const toastId=toast.loading("Logging in")
     console.log("hello");
 
     try {
+      setIsLoading(true);
       const { data } = await axios.post(
         `${server}/api/v1/users/login`,
         { username: username.value, password: password.value },
@@ -60,14 +65,19 @@ const Login = () => {
 
       dispatch(userExists(data.user));
       navigate("/");
-      toast.success(data.message);
+      toast.success(data.message,{id:toastId});
     } catch (error) {
       toast.error(error?.response?.data?.message || "Something Went wrong");
+    }
+    finally{
+      setIsLoading(false);
     }
   };
 
   const signupHandler = async(e) => {
     e.preventDefault();
+
+
 
     const formData = new FormData();
     formData.append("avatar", avatar.file);
@@ -77,7 +87,11 @@ const Login = () => {
     formData.append("password", password.value);
     formData.append("contact",contact.value);
 
+    const toastId=toast.loading("Registering your info");
+
     try {
+
+      setIsLoading(true);
       const { data } = await axios.post(`${server}/api/v1/users/newUser`, formData, {
         withCredentials: true,
         headers: {
@@ -88,12 +102,15 @@ const Login = () => {
       console.log(data);
 
       dispatch(userExists(data.user));
-      toast.success(data.message);
+      toast.success(data.message,{id:toastId});
     } catch (error) {
 
       toast.error(error?.response?.data?.message|| "Somethin went wrong");
 
 
+    }
+    finally{
+      setIsLoading(false);
     }
 
    
@@ -157,6 +174,7 @@ const Login = () => {
                   variant="contained"
                   color="primary"
                   type="submit"
+                  disabled={isLoading}
                 >
                   Login
                 </Button>
@@ -170,6 +188,7 @@ const Login = () => {
                   variant="text"
                   color="primary"
                   onClick={toggleLogin}
+                  disabled={isLoading}
                 >
                   Sign UP instead
                 </Button>
@@ -275,6 +294,7 @@ const Login = () => {
                   color="primary"
                   type="submit"
                   onClick={signupHandler}
+                  disabled={isLoading}
                 >
                   Sign UP
                 </Button>
@@ -288,6 +308,7 @@ const Login = () => {
                   variant="text"
                   color="primary"
                   onClick={toggleLogin}
+                  disabled={isLoading}
                 >
                   Login instead
                 </Button>

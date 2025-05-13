@@ -42,8 +42,8 @@ const addMemberValidator = () => [
   body("members")
     .notEmpty()
     .withMessage("Please enter members")
-    .isArray({ min: 2, max: 100 })
-    .withMessage("Members length should be greater than 2 and less than 100"),
+    .isArray({ min: 1, max: 100 })
+    .withMessage("Members length should be greater than 1 and less than 100"),
 ];
 
 const removeMemberValidator = () => [
@@ -73,7 +73,7 @@ const sendRequestValidator = () => [
 ];
 
 const acceptRequestValidator = () => [
-  body("requestId", "Please enter RequestId").notEmpty(),
+  body("requestId", "Please enter requestId").notEmpty(),
   body("accept", "Please Add accept")
     .notEmpty()
     .withMessage("Please add accept")

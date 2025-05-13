@@ -2,18 +2,49 @@ import { Button, Dialog, DialogTitle, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { Sample_users } from "../../constants/sampleData";
 import UserSearchItem from "../specific/UserSearchItem";
+import { useAddMembersToGroupMutation, useMyFriendsQuery } from "../../redux/api/api";
+import { useAsyncMutation, useErrors } from "../../hooks/hooks";
+import memoTheme from "@mui/material/utils/memoTheme";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsAddMember } from "../../redux/misc";
 
-const AddMemberDialog = ({ closeHandler }) => {
-  const [members, setMembers] = useState(Sample_users);
+const AddMemberDialog = ({ chatId }) => {
+
+  const dispatch=useDispatch();
+
+  const {isAddMember}=useSelector((state)=>state.misc);
+
+  const { isLoading, isError, error, data }=useMyFriendsQuery();
+
+  const errors=[{isError,error}]
+
+
+  useErrors()
+
+   const [addMemberFunction,addMemberLoader]=useAsyncMutation(useAddMembersToGroupMutation);
+
+
+  
   const [selectedMembers, setSelectedMembers] = useState([]);
 
-  console.log(members);
+
+  const closeHandler=()=>{
+
+    setSelectedMembers([]);
+    dispatch(setIsAddMember(false));
+    
+  }
+
+
+
 
   const addMemberHandlerChanges = () => {
-    setMembers([]);
-    setSelectedMembers([]);
+    addMemberFunction("Adding new Members....",{chatId,members:selectedMembers});
+    closeHandler();
   };
 
+
+ 
   const AddToGroupHandler = (id) => {
     console.log(id);
     setSelectedMembers((prev) =>
@@ -24,12 +55,12 @@ const AddMemberDialog = ({ closeHandler }) => {
   };
 
   return (
-    <Dialog open onClose={closeHandler}>
+    <Dialog open={isAddMember} onClose={closeHandler}>
       <DialogTitle textAlign={"center"}>Add members</DialogTitle>
 
       <Stack spacing={"2rem"} margin={"1rem"}>
-        {members.length>0 ? (
-          members.map((user, index) => (
+        {data?.friends.length>0 ? (
+          data?.friends.map((user, index) => (
             <UserSearchItem
               key={user._id}
               user={user}
@@ -51,7 +82,7 @@ const AddMemberDialog = ({ closeHandler }) => {
         <Button color="error" onClick={closeHandler}>
           Cancel
         </Button>
-        <Button variant="contained" onClick={addMemberHandlerChanges}>
+        <Button variant="contained" onClick={addMemberHandlerChanges} disabled={addMemberLoader}>
           Submit Changes
         </Button>
       </Stack>

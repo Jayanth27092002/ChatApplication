@@ -3,6 +3,9 @@ import { Customlink } from '../Styles/StyledComponent'
 import { Box, Stack, Typography } from '@mui/material'
 import { Translate } from '@mui/icons-material'
 import AvatarCard from '../shared/AvatarCard'
+import { useDispatch } from 'react-redux'
+import { resetNewMessagesAlert } from '../../redux/chat'
+
 
 const ChatItem = (
     {
@@ -17,10 +20,19 @@ const ChatItem = (
         handleDeleteChat
     }
 ) => {
+
+    const dispatch=useDispatch()
+
+    const onClickHandler=()=>{
+       
+        dispatch(resetNewMessagesAlert(_id));
+    }
   return (
     <Customlink to={`/chat/${_id}`} onContextMenu={(e)=>handleDeleteChat(e,_id,groupChat)} sx={{padding:0}}>
 
-    <div style={{
+    <div 
+    
+    style={{
         display:'flex',
         gap:"1rem",
         alignItems:"center",
@@ -48,7 +60,7 @@ const ChatItem = (
             </Typography>
         }
 
-        {isOnline && <Box sx={{
+        {isOnline && !groupChat && <Box sx={{
         width:"10px",
         height:"10px",
         borderRadius:"50%",

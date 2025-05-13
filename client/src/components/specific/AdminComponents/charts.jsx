@@ -1,6 +1,7 @@
 import React from 'react'
 import {Chart as Chartjs,CategoryScale,Tooltip,LinearScale,LineElement,ArcElement,Legend,Filler,PointElement} from "chart.js"
 import { Doughnut, Line } from 'react-chartjs-2'
+import { Last7days } from '../../libs/fileformat';
 
 
 
@@ -41,11 +42,10 @@ export const LineChart=({value=[]})=>{
    
 
     const data={
-        labels:value,
+        labels:Last7days(),
 
         datasets:[{
-            data:[1,24,31,4,53,5,15],
-            label:"Sample",
+            data:value,
             fill:true,
             backgroundColor:"rgba(75,12,192,0.5)",
             borderColor:"rgba(75,12,192,1)"
